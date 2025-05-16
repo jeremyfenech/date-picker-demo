@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon } from "lucide-react"
 import {
   DatePicker as AriaDatePicker,
   DatePickerProps as AriaDatePickerProps,
@@ -12,13 +12,12 @@ import {
   PopoverProps as AriaPopoverProps,
   ValidationResult as AriaValidationResult,
   composeRenderProps,
-  DateValue,
   Text,
-} from "react-aria-components";
+} from "react-aria-components"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-import { Button } from "./button";
+import { Button } from "./button"
 import {
   Calendar,
   CalendarCell,
@@ -28,16 +27,14 @@ import {
   CalendarHeaderCell,
   CalendarHeading,
   RangeCalendar,
-} from "./calendar";
-import { DateField, DateInput } from "./datefield";
-import { FieldError, FieldGroup, Label } from "./field";
-import { Popover } from "./popover";
-import { useState } from "react";
-import { RangeValue } from "@/app/demo-jolly-date-range-picker/demo-jolly-date-range-picker";
+} from "./calendar"
+import { DateInput } from "./datefield"
+import { FieldError, FieldGroup, Label } from "./field"
+import { Popover } from "./popover"
 
-const DatePicker = AriaDatePicker;
+const DatePicker = AriaDatePicker
 
-const DateRangePicker = AriaDateRangePicker;
+const DateRangePicker = AriaDateRangePicker
 
 const DatePickerContent = ({
   className,
@@ -57,13 +54,13 @@ const DatePickerContent = ({
       {...props}
     />
   </Popover>
-);
+)
 
 interface JollyDatePickerProps<T extends AriaDateValue>
   extends AriaDatePickerProps<T> {
-  label?: string;
-  description?: string;
-  errorMessage?: string | ((validation: AriaValidationResult) => string);
+  label?: string
+  description?: string
+  errorMessage?: string | ((validation: AriaValidationResult) => string)
 }
 
 function JollyDatePicker<T extends AriaDateValue>({
@@ -111,14 +108,14 @@ function JollyDatePicker<T extends AriaDateValue>({
         </Calendar>
       </DatePickerContent>
     </DatePicker>
-  );
+  )
 }
 
 interface JollyDateRangePickerProps<T extends AriaDateValue>
   extends AriaDateRangePickerProps<T> {
-  label?: string;
-  description?: string;
-  errorMessage?: string | ((validation: AriaValidationResult) => string);
+  label?: string
+  description?: string
+  errorMessage?: string | ((validation: AriaValidationResult) => string)
 }
 
 function JollyDateRangePicker<T extends AriaDateValue>({
@@ -128,96 +125,50 @@ function JollyDateRangePicker<T extends AriaDateValue>({
   className,
   ...props
 }: JollyDateRangePickerProps<T>) {
-  // Wrap onChange to only call if valid
-  const { onChange, ...restProps } = props;
-
-  const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>({
-    start: props.value?.start,
-    end: props.value?.end,
-  });
-
   return (
     <DateRangePicker
       className={composeRenderProps(className, (className) =>
         cn("group flex flex-col gap-2", className)
       )}
-      {...restProps}
-      value={dateRange}
+      {...props}
     >
-      {(component) => (
-        <>
-          <Label>{label}</Label>
-          <FieldGroup>
-            <DateField
-              slot={"start"}
-              onChange={(value) => {
-                setDateRange({ start: value, end: dateRange.end });
+      <Label>{label}</Label>
+      <FieldGroup>
+        <DateInput variant="ghost" slot={"start"} />
+        <span aria-hidden className="px-2 text-sm text-muted-foreground">
+          -
+        </span>
+        <DateInput className="flex-1" variant="ghost" slot={"end"} />
 
-                if (!component.state.isInvalid) {
-                  onChange?.({ start: value, end: dateRange.end });
-                }
-              }}
-              value={dateRange.start}
-            >
-              <DateInput variant="ghost" />
-            </DateField>
-            <span aria-hidden className="px-2 text-sm text-muted-foreground">
-              -
-            </span>
-            <DateField
-              slot={"end"}
-              onChange={(value) => {
-                setDateRange({ start: dateRange.start, end: value });
-
-                console.log("end", value, component.state.isInvalid);
-
-                if (!component.state.isInvalid) {
-                  onChange?.({ start: dateRange.start, end: value });
-                }
-              }}
-              value={dateRange.end}
-            >
-              <DateInput variant="ghost" />
-            </DateField>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="mr-1 size-6 data-[focus-visible]:ring-offset-0"
-            >
-              <CalendarIcon aria-hidden className="size-4" />
-            </Button>
-          </FieldGroup>
-          {description && (
-            <Text className="text-sm text-muted-foreground" slot="description">
-              {description}
-            </Text>
-          )}
-          <FieldError>{errorMessage}</FieldError>
-          <DatePickerContent>
-            <RangeCalendar
-              onChange={(value) => {
-                setDateRange({ start: value.start, end: value.end });
-
-                if (!component.state.isInvalid) {
-                  onChange?.(value);
-                }
-              }}
-            >
-              <CalendarHeading />
-              <CalendarGrid>
-                <CalendarGridHeader>
-                  {(day) => <CalendarHeaderCell>{day}</CalendarHeaderCell>}
-                </CalendarGridHeader>
-                <CalendarGridBody>
-                  {(date) => <CalendarCell date={date} />}
-                </CalendarGridBody>
-              </CalendarGrid>
-            </RangeCalendar>
-          </DatePickerContent>
-        </>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mr-1 size-6 data-[focus-visible]:ring-offset-0"
+        >
+          <CalendarIcon aria-hidden className="size-4" />
+        </Button>
+      </FieldGroup>
+      {description && (
+        <Text className="text-sm text-muted-foreground" slot="description">
+          {description}
+        </Text>
       )}
+      <FieldError>{errorMessage}</FieldError>
+      <DatePickerContent>
+        <RangeCalendar>
+          <CalendarHeading />
+          <CalendarGrid>
+            <CalendarGridHeader>
+              {(day) => <CalendarHeaderCell>{day}</CalendarHeaderCell>}
+            </CalendarGridHeader>
+            <CalendarGridBody>
+              {(date) => <CalendarCell date={date} />}
+            </CalendarGridBody>
+          </CalendarGrid>
+        </RangeCalendar>
+      </DatePickerContent>
     </DateRangePicker>
-  );
+  )
 }
 
 export {
@@ -226,5 +177,5 @@ export {
   DateRangePicker,
   JollyDatePicker,
   JollyDateRangePicker,
-};
-export type { JollyDatePickerProps, JollyDateRangePickerProps };
+}
+export type { JollyDatePickerProps, JollyDateRangePickerProps }
